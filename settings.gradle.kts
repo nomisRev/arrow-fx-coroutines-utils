@@ -1,7 +1,7 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 enableFeaturePreview("VERSION_CATALOGS")
 
-rootProject.name = "arrow-fx-utils"
+rootProject.name = "arrow-fx-coroutines-utils"
 
 plugins {
     id("com.gradle.enterprise") version "3.8"
