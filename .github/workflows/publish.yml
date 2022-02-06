@@ -1,0 +1,97 @@
+name: "Publish all libs"
+
+on:
+  push:
+    tags:
+      - '**'
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx5g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+  SONATYPE_USER: '${{ secrets.SONATYPE_USER }}'
+  SONATYPE_PWD: '${{ secrets.SONATYPE_PWD }}'
+  OSS_USER: '${{ secrets.OSS_USER }}'
+  OSS_TOKEN: '${{ secrets.OSS_TOKEN }}'
+  OSS_STAGING_PROFILE_ID: '${{ secrets.OSS_STAGING_PROFILE_ID }}'
+  SIGNING_KEY_NAME: '${{ secrets.SIGNING_KEY_NAME }}'
+  SIGNING_KEY_ID: '${{ secrets.SIGNING_KEY_ID }}'
+  SIGNING_KEY_PASSPHRASE: '${{ secrets.SIGNING_KEY_PASSPHRASE }}'
+  SIGNING_KEY: '${{ secrets.SIGNING_KEY }}'
+
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ 'macos-latest', 'ubuntu-latest', 'windows-latest' ]
+
+    outputs:
+      saga-version: ${{ steps.get-saga-version.outputs.saga-version }}
+
+    runs-on: ${{matrix.os}}
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2.4.0
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: jvmTest
+        uses: gradle/gradle-build-action@v2.0.1
+        with:
+          arguments: jvmTest jsTest detektMetadataMain --scan --full-stacktrace
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: 'reports-${{ matrix.os }}'
+          path: '**/build/reports/**'
+
+      - id: get-saga-version
+        name: Get Saga version
+        run: |
+          ./gradlew
+          echo "::set-output name=saga-version::$(head -n 1 build/semver/version.txt)"
+
+  publish:
+    needs: check
+    env:
+      SONATYPE_USER: ${{ secrets.SONATYPE_USER }}
+      SONATYPE_PWD: ${{ secrets.SONATYPE_PWD }}
+
+    runs-on: macos-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: 'zulu'
+          java-version: 11
+
+      - name: Publish alpha version
+        if: |
+          contains(needs.check.outputs.saga-version, 'alpha') ||
+          contains(needs.check.outputs.saga-version, 'beta') ||
+          contains(needs.check.outputs.saga-version, 'rc')
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --full-stacktrace --scan
+
+      - name: Publish final version
+        if: |
+          !contains(needs.check.outputs.saga-version, 'alpha') &&
+          !contains(needs.check.outputs.saga-version, 'beta') &&
+          !contains(needs.check.outputs.saga-version, 'rc')
+        run: ./gradlew publishToSonatype closeSonatypeStagingRepository --full-stacktrace --scan
+
+      - name: Stop Gradle daemons
+        run: ./gradlew --stop
