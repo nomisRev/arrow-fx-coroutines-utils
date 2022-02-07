@@ -19,14 +19,6 @@ infix fun <T> Property<T>.by(value: T) {
   set(value)
 }
 
-System.getenv("SIGNING_KEY")?.let { signingKey ->
-  project.setProperty("ORG_GRADLE_PROJECT_signingKey", signingKey)
-}
-
-System.getenv("SIGNING_KEY_PASSPHRASE")?.let { signingPassword ->
-  project.setProperty("ORG_GRADLE_PROJECT_signingPassword", signingPassword)
-}
-
 allprojects {
   extra.set("dokka.outputDirectory", rootDir.resolve("docs"))
 }
