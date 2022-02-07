@@ -10,10 +10,7 @@ env:
   OSS_USER: '${{ secrets.OSS_USER }}'
   OSS_TOKEN: '${{ secrets.OSS_TOKEN }}'
   OSS_STAGING_PROFILE_ID: '${{ secrets.OSS_STAGING_PROFILE_ID }}'
-  SIGNING_KEY_NAME: '${{ secrets.SIGNING_KEY_NAME }}'
   SIGNING_KEY_ID: '${{ secrets.SIGNING_KEY_ID }}'
-  SIGNING_KEY_PASSPHRASE: '${{ secrets.SIGNING_KEY_PASSPHRASE }}'
-  SIGNING_KEY: '${{ secrets.SIGNING_KEY }}'
 
 jobs:
   check:
@@ -22,7 +19,7 @@ jobs:
         os: [ 'macos-latest', 'ubuntu-latest', 'windows-latest' ]
 
     outputs:
-      saga-version: ${{ steps.get-saga-version.outputs.saga-version }}
+      version: ${{ steps.get-version.outputs.version }}
 
     runs-on: ${{matrix.os}}
     timeout-minutes: 20
@@ -50,11 +47,11 @@ jobs:
           name: 'reports-${{ matrix.os }}'
           path: '**/build/reports/**'
 
-      - id: get-saga-version
+      - id: get-version
         name: Get Saga version
         run: |
           ./gradlew
-          echo "::set-output name=saga-version::$(head -n 1 build/semver/version.txt)"
+          echo "::set-output name=version::$(head -n 1 build/semver/version.txt)"
 
   publish:
     needs: check
@@ -82,16 +79,16 @@ jobs:
 
       - name: Publish alpha version
         if: |
-          contains(needs.check.outputs.saga-version, 'alpha') ||
-          contains(needs.check.outputs.saga-version, 'beta') ||
-          contains(needs.check.outputs.saga-version, 'rc')
+          contains(needs.check.outputs.version, 'alpha') ||
+          contains(needs.check.outputs.version, 'beta') ||
+          contains(needs.check.outputs.version, 'rc')
         run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --full-stacktrace --scan
 
       - name: Publish final version
         if: |
-          !contains(needs.check.outputs.saga-version, 'alpha') &&
-          !contains(needs.check.outputs.saga-version, 'beta') &&
-          !contains(needs.check.outputs.saga-version, 'rc')
+          !contains(needs.check.outputs.version, 'alpha') &&
+          !contains(needs.check.outputs.version, 'beta') &&
+          !contains(needs.check.outputs.version, 'rc')
         run: ./gradlew publishToSonatype closeSonatypeStagingRepository --full-stacktrace --scan
 
       - name: Stop Gradle daemons
