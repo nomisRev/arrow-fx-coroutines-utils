@@ -77,8 +77,8 @@ jobs:
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v4
         with:
-          gpg_private_key: ${{ secrets.SIGNING_KEY }}
-          passphrase: ${{ secrets.SIGNING_KEY_PASSPHRASE }}
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Publish alpha version
         if: |
