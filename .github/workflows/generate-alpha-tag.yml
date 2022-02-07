@@ -25,9 +25,7 @@ jobs:
           java-version: 11
 
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2.1.3
-        with:
-          arguments: --full-stacktrace jvmTest jsTest detektMetadataMain "-Psemver.stage=alpha"
+        run: ./gradlew jvmTest jsTest detektMetadataMain "-Psemver.stage=alpha"
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop
@@ -50,10 +48,8 @@ jobs:
           distribution: 'zulu'
           java-version: 11
 
-      - name: Gradle build
-        uses: gradle/gradle-build-action@v2.1.3
-        with:
-          arguments: --full-stacktrace createSemverTag "-Psemver.stage=alpha"
+      - name: Generate Tag
+        run: ./gradlew createSemverTag "-Psemver.stage=alpha"
 
       - name: Push
         run: git push --follow-tags

@@ -84,18 +84,14 @@ jobs:
           contains(needs.check.outputs.saga-version, 'alpha') ||
           contains(needs.check.outputs.saga-version, 'beta') ||
           contains(needs.check.outputs.saga-version, 'rc')
-        uses: gradle/gradle-build-action@v2.1.3
-        with:
-          arguments: --full-stacktrace publishToSonatype closeAndReleaseSonatypeStagingRepository --full-stacktrace --scan
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --full-stacktrace --scan
 
       - name: Publish final version
         if: |
           !contains(needs.check.outputs.saga-version, 'alpha') &&
           !contains(needs.check.outputs.saga-version, 'beta') &&
           !contains(needs.check.outputs.saga-version, 'rc')
-        uses: gradle/gradle-build-action@v2.1.3
-        with:
-          arguments: --full-stacktrace publishToSonatype closeSonatypeStagingRepository --full-stacktrace --scan
+        run: ./gradlew publishToSonatype closeSonatypeStagingRepository --full-stacktrace --scan
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop
