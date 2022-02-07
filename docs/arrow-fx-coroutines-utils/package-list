@@ -1,0 +1,11 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:io.github.nomisrev////PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/index.html
+$dokka.location:io.github.nomisrev//CyclicBarrier/#kotlin.Int/PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/-cyclic-barrier.html
+$dokka.location:io.github.nomisrev//uncancellable/#kotlin.coroutines.SuspendFunction1[io.github.nomisrev.UncancellableRegion,TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/uncancellable.html
+$dokka.location:io.github.nomisrev/CyclicBarrier///PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/-cyclic-barrier/index.html
+$dokka.location:io.github.nomisrev/CyclicBarrier/await/#/PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/-cyclic-barrier/await.html
+$dokka.location:io.github.nomisrev/UncancellableRegion///PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/-uncancellable-region/index.html
+$dokka.location:io.github.nomisrev/UncancellableRegion/cancellable/#kotlin.coroutines.SuspendFunction0[TypeParam(bounds=[kotlin.Any?])]/PointingToDeclaration/arrow-fx-coroutines-utils/io.github.nomisrev/-uncancellable-region/cancellable.html
+io.github.nomisrev
+
