@@ -46,7 +46,7 @@ jobs:
           java-version: 11
 
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2.1.3
+        uses: gradle/gradle-build-action@v2.1.4
         with:
           arguments: --full-stacktrace jvmTest jsTest detektMetadataMain "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
@@ -72,7 +72,7 @@ jobs:
           java-version: 11
 
       - name: Gradle build
-        uses: gradle/gradle-build-action@v2.1.3
+        uses: gradle/gradle-build-action@v2.1.4
         with:
           arguments: --full-stacktrace createSemverTag "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
