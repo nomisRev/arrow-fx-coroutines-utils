@@ -1,7 +1,7 @@
 package io.github.nomisrev
 
-import arrow.continuations.generic.AtomicRef
-import arrow.continuations.generic.update
+import arrow.core.continuations.AtomicRef
+import arrow.core.continuations.loop
 import arrow.fx.coroutines.onCancel
 import kotlinx.coroutines.CompletableDeferred
 
@@ -49,13 +49,17 @@ private class DefaultCyclicBarrier(val capacity: Int) : CyclicBarrier {
 
   fun CompletableDeferred<Unit>.complete(): suspend () -> Unit = { complete(Unit) }
 
-  fun <A, B> AtomicRef<A>.modify(f: (A) -> Pair<A, B>): B {
-    tailrec fun go(): B {
-      val a = get()
-      val (u, b) = f(a)
-      return if (!compareAndSet(a, u)) go() else b
+  inline fun <A, B> AtomicRef<A>.modify(f: (A) -> Pair<A, B>): B {
+    loop { current ->
+      val (update, res) = f(current)
+      if (compareAndSet(current, update)) return res else Unit
     }
+  }
 
-    return go()
+  inline fun <A> AtomicRef<A>.update(function: (A) -> A) {
+    loop { current ->
+      val update = function(current)
+      if (compareAndSet(current, update)) return else Unit
+    }
   }
 }

@@ -40,8 +40,6 @@ kotlin {
     }
     commonTest {
       dependencies {
-        implementation(libs.arrow.core)
-        implementation(libs.arrow.fx)
         implementation(libs.kotest.frameworkEngine)
         implementation(libs.kotest.assertionsCore)
         implementation(libs.kotest.property)

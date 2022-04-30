@@ -60,7 +60,7 @@ private class PollImpl(val original: CoroutineContext, val scope: CoroutineScope
   UncancellableRegion, CoroutineScope by scope {
   // We can run a cancellable block by running the suspend function on the original context.
   override suspend fun <A> cancellable(action: suspend () -> A): A =
-      suspendCoroutineUninterceptedOrReturn { cont ->
-    action.startCoroutineUninterceptedOrReturn(Continuation(original, cont::resumeWith))
-  }
+    suspendCoroutineUninterceptedOrReturn { cont ->
+      action.startCoroutineUninterceptedOrReturn(Continuation(original, cont::resumeWith))
+    }
 }
