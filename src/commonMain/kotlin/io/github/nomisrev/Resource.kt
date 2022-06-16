@@ -59,6 +59,7 @@ public suspend fun <A> Resource<A>.allocatedCase(): AllocatedCase<A> {
   }
 }
 
+@Suppress("TooGenericExceptionCaught")
 private inline fun <A> catchNel(f: () -> A): ValidatedNel<Throwable, A> =
   try {
     f().valid()

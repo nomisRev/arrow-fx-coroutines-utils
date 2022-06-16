@@ -6,9 +6,9 @@ import kotlinx.coroutines.CompletableDeferred
 
 /** CountDownLatch allows for awaiting a given number of countdown signals. */
 public interface CountDownLatch {
-  public suspend fun count(): Long
+  public fun count(): Long
   public suspend fun await(): Unit
-  public suspend fun countDown(): Unit
+  public fun countDown(): Unit
 }
 
 public fun CountDownLatch(initial: Long): CountDownLatch = DefaultCountDownLatch(initial)
@@ -17,11 +17,12 @@ private class DefaultCountDownLatch(initial: Long) : CountDownLatch {
   private val signal = CompletableDeferred<Unit>()
   private val count = AtomicRef(initial)
 
-  override suspend fun count(): Long = count.get()
+  override fun count(): Long = count.get()
 
   override suspend fun await() = signal.await()
 
-  override suspend fun countDown() {
+  @Suppress("ReturnCount")
+  override fun countDown() {
     count.loop { current ->
       when {
         current == 0L -> return

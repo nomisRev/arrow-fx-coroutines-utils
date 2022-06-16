@@ -34,6 +34,7 @@ public interface Hotswap<R> {
 }
 
 /** Creates a [Hotswap] initialised with `Resource<R>`. */
+@Suppress("FunctionName")
 public fun <R> Hotswap(initial: Resource<R>): Resource<Pair<Hotswap<R>, R>> =
   Hotswap<R>().map { hotswap ->
     val r = hotswap.swap(initial)
@@ -42,6 +43,7 @@ public fun <R> Hotswap(initial: Resource<R>): Resource<Pair<Hotswap<R>, R>> =
 
 private typealias Finalizer = suspend () -> Unit
 
+@Suppress("FunctionName")
 public fun <R> Hotswap(): Resource<Hotswap<R>> =
   Resource(
       { AtomicRef<Finalizer?> {} },
