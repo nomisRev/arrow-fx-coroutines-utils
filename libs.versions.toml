@@ -1,5 +1,5 @@
 [versions]
-arrow = "1.1.2"
+arrow = "1.0.1"
 arrowGradleConfig = "0.10.2"
 coroutines = "1.6.1"
 dokka = "1.6.21"

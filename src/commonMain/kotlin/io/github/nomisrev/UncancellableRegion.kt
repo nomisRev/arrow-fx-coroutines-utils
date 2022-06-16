@@ -16,40 +16,46 @@ public interface UncancellableRegion : CoroutineScope {
 
 /**
  * Uncancellable builder that allows for creating regions of cancellable blocks. This is very useful
- * when working with predef.uncancellable code, since often you'll want to execute a cancellable
- * piece in the middle of an uncancellable piece of code.
+ * when working with uncancellable code, since often you'll want to execute a cancellable piece in
+ * the middle of an uncancellable piece of code.
  *
- * i.e.
+ * Let's write a function that loops over a `IntRange`, and checks cancellation before printing the
+ * `msg` and the current count of the `IntRange`.
  *
  * ```kotlin
- * import kotlinx.coroutines.CoroutineStart
- * import kotlinx.coroutines.cancelAndJoin
- * import kotlinx.coroutines.coroutineScope
- * import kotlinx.coroutines.launch
+ * import kotlinx.coroutines.ensureActive
+ * import kotlin.coroutines.coroutineContext
  *
  * suspend fun operation(msg: String, range: IntRange = 0..10): Unit =
  *   range.forEach {
  *     coroutineContext.ensureActive()
  *     println("$msg - $it")
  *   }
+ * ```
  *
- * suspend fun main() {
- *   coroutineScope {
- *     launch(start = CoroutineStart.ATOMIC) {
- *       uncancellable {
- *         operation("predef.uncancellable - start")
- *         cancellable { operation("cancellable - mid") }
- *         operation("predef.uncancellable - end")
- *       }
- *     }.cancelAndJoin()
+ * ```kotlin
+ * import kotlinx.coroutines.cancelAndJoin
+ * import kotlinx.coroutines.launch
+ * import kotlinx.coroutines.runBlocking
+ * import kotlinx.coroutines.delay
+ *
+ * suspend fun main() = runBlocking<Unit> {
+ *   val job = launch {
+ *     uncancellable {
+ *       operation("predef.uncancellable - start")
+ *       cancellable { operation("cancellable - mid") }
+ *       operation("predef.uncancellable - end")
+ *     }
  *   }
+ *   delay(1000)
+ *   job.cancelAndJoin()
  * }
  * ```
  *
  * See [CyclicBarrier] for an example, where we work with atomic state in an uncancellable way, and
  * await the in a cancellable way.
  *
- * Port of Async#predef.uncancellable from Cats-effect
+ * Port of Async#uncancellable from Cats-effect
  */
 public suspend fun <A> uncancellable(body: suspend UncancellableRegion.() -> A): A {
   val ctx = currentCoroutineContext()
