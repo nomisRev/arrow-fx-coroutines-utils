@@ -7,6 +7,8 @@ Data types in Arrow Fx Utils
 
  - [x] CyclicBarrier from [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/CyclicBarrier.scala)
  - [x] Uncancellable from [Cats-effect](https://github.com/typelevel/cats-effect)
- - [ ] HotSwap from [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/Hotswap.scala)
- - [ ] Backpressure [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/Backpressure.scala)
- - [ ] CountDownLatch [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/CountDownLatch.scala)
+ - [x] HotSwap from [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/Hotswap.scala)
+ - [x] Backpressure [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/Backpressure.scala)
+ - [x] CountDownLatch [Cats-effect](https://github.com/typelevel/cats-effect/blob/series/3.x/std/shared/src/main/scala/cats/effect/std/CountDownLatch.scala)
+
+Propose new data types in the issues 🙏
