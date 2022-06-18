@@ -1,7 +1,7 @@
 rootProject.name = "arrow-fx-coroutines-utils"
 
 plugins {
-    id("com.gradle.enterprise") version "3.10.1"
+    id("com.gradle.enterprise") version "3.10.2"
 }
 
 dependencyResolutionManagement {
