@@ -17,6 +17,12 @@ private class DefaultCountDownLatch(initial: Long) : CountDownLatch {
   private val signal = CompletableDeferred<Unit>()
   private val count = AtomicRef(initial)
 
+  init {
+    require(initial > 0) {
+      "CountDownLatch must be constructed with positive non-zero initial count $initial but was $initial > 0"
+    }
+  }
+
   override fun count(): Long = count.get()
 
   override suspend fun await() = signal.await()

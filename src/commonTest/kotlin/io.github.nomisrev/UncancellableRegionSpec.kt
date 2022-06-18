@@ -48,7 +48,10 @@ class UncancellableRegionSpec :
       check { timeout ->
         val exitCase = CompletableDeferred<ExitCase>()
         withTimeoutOrNull(timeout / 2) {
+            // this cancellable // ctx A
             uncancellable {
+              // this uncancelable (ctx A + NonCancelable)
+
               uncancellable {
                 guaranteeCase({ cancellable { delay(timeout) } }, exitCase::complete)
               }

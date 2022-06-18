@@ -41,6 +41,7 @@ public interface UncancellableRegion : CoroutineScope {
  *
  * suspend fun main() = runBlocking<Unit> {
  *   val job = launch {
+ *     // <--
  *     uncancellable {
  *       operation("predef.uncancellable - start")
  *       cancellable { operation("cancellable - mid") }

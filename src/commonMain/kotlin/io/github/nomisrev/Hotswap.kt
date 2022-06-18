@@ -49,25 +49,25 @@ public fun <R> Hotswap(): Resource<Hotswap<R>> =
       { AtomicRef<Finalizer?> {} },
       { state, _ -> state.getAndSet(null)?.invoke() ?: throw Hotswap.FinalizedException() }
     )
-    .map { state ->
-      object : Hotswap<R> {
-        private suspend fun swapFinalizer(next: Finalizer): Unit =
-          state.loop { finalizer ->
-            when {
-              finalizer == null -> {
-                next.invoke()
-                throw Hotswap.FinalizedException()
-              }
-              state.compareAndSet(finalizer, next) -> finalizer.invoke()
-            }
-          }
+    .map { state -> DefaultHotswap(state) }
 
-        override suspend fun swap(next: Resource<R>): R = uncancellable {
-          val (r, finalizers) = cancellable(next::allocated)
-          swapFinalizer(finalizers)
-          r
+private class DefaultHotswap<R>(val state: AtomicRef<Finalizer?>) : Hotswap<R> {
+  private suspend fun swapFinalizer(next: Finalizer): Unit =
+    state.loop { finalizer ->
+      when {
+        finalizer == null -> {
+          next.invoke()
+          throw Hotswap.FinalizedException()
         }
-
-        override suspend fun clear() = uncancellable { swapFinalizer {} }
+        state.compareAndSet(finalizer, next) -> return finalizer.invoke()
       }
     }
+
+  override suspend fun swap(next: Resource<R>): R = uncancellable {
+    val (r, finalizers) = cancellable(next::allocated)
+    swapFinalizer(finalizers)
+    r
+  }
+
+  override suspend fun clear() = uncancellable { swapFinalizer {} }
+}
