@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeoutOrNull
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
 class UncancellableRegionSpec :
   StringSpec({
     "uncancellable always results in ExitCase.Completed" {
@@ -82,6 +82,7 @@ class UncancellableRegionSpec :
     }
   })
 
+@ExperimentalCoroutinesApi
 suspend fun check(property: suspend TestScope.(timeout: Long) -> Unit): PropertyContext =
   checkAll(Arb.long(min = 2, max = (Long.MAX_VALUE / 2) - 1)) { timeout ->
     runTest { property(this, timeout) }

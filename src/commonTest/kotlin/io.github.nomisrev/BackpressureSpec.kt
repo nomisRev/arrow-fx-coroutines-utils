@@ -20,7 +20,9 @@ class BackpressureSpec :
     "Lossy Strategy should return null when no permits are available" {
       val backpressure = Backpressure(Lossy, 1)
       val never =
-        launch(start = CoroutineStart.UNDISPATCHED) { backpressure.metered { awaitCancellation() } }
+        launch(start = CoroutineStart.UNDISPATCHED) {
+          backpressure.metered<Unit> { awaitCancellation() }
+        }
       backpressure.metered {}.shouldBeNull()
       never.cancelAndJoin()
       backpressure.metered {} shouldBe Unit

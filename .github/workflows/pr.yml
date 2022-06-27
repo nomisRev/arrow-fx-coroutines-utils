@@ -12,6 +12,7 @@ env:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       matrix:
         os: [ 'macos-latest', 'ubuntu-latest', 'windows-latest' ]
@@ -29,7 +30,7 @@ jobs:
           java-version: 11
 
       - name: Build
-        uses: gradle/gradle-build-action@v2.1.6
+        uses: gradle/gradle-build-action@v2.2.0
         with:
           arguments: build --scan --full-stacktrace
 
