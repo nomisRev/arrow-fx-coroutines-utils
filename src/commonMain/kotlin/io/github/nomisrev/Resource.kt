@@ -2,9 +2,9 @@
 
 package io.github.nomisrev
 
-import arrow.core.continuations.AtomicRef
 import arrow.core.NonEmptyList
 import arrow.core.ValidatedNel
+import arrow.core.continuations.AtomicRef
 import arrow.core.continuations.update
 import arrow.core.identity
 import arrow.core.invalidNel
@@ -40,28 +40,31 @@ public suspend fun <A> Resource<A>.allocatedCase(): AllocatedCase<A> {
   }
 }
 
-private class ResourceScopeImpl(
-  val finalizers: AtomicRef<List<suspend (ExitCase) -> Unit>>
-) : ResourceScope {
+private class ResourceScopeImpl(val finalizers: AtomicRef<List<suspend (ExitCase) -> Unit>>) :
+  ResourceScope {
 
   override suspend fun <A> Resource<A>.bind(): A =
     when (this) {
       is Resource.Dsl -> dsl.invoke(this@ResourceScopeImpl)
-      is Resource.Allocate -> bracketCase({
-        val a = acquire()
-        val finalizer: suspend (ExitCase) -> Unit = { ex: ExitCase -> release(a, ex) }
-        finalizers.update { finalizer prependTo it }
-        a
-      }, ::identity, { a, ex ->
-        // Only if ExitCase.Failure, or ExitCase.Cancelled during acquire we cancel
-        // Otherwise we've saved the finalizer, and it will be called from somewhere else.
-        if (ex != ExitCase.Completed) {
-          val e = finalizers.get().cancelAll(ex)
-          val e2 = runCatching { release(a, ex) }.exceptionOrNull()
-          Platform.composeErrors(e, e2)?.let { throw it }
-        }
-      })
-
+      is Resource.Allocate ->
+        bracketCase(
+          {
+            val a = acquire()
+            val finalizer: suspend (ExitCase) -> Unit = { ex: ExitCase -> release(a, ex) }
+            finalizers.update { finalizer prependTo it }
+            a
+          },
+          ::identity,
+          { a, ex ->
+            // Only if ExitCase.Failure, or ExitCase.Cancelled during acquire we cancel
+            // Otherwise we've saved the finalizer, and it will be called from somewhere else.
+            if (ex != ExitCase.Completed) {
+              val e = finalizers.get().cancelAll(ex)
+              val e2 = runCatching { release(a, ex) }.exceptionOrNull()
+              Platform.composeErrors(e, e2)?.let { throw it }
+            }
+          }
+        )
       is Resource.Bind<*, *> -> {
         val dsl: suspend ResourceScope.() -> A = {
           val any = source.bind()
@@ -70,7 +73,6 @@ private class ResourceScopeImpl(
         }
         dsl(this@ResourceScopeImpl)
       }
-
       is Resource.Defer -> resource().bind()
     }
 }
