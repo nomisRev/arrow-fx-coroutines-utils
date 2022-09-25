@@ -2,6 +2,7 @@ package io.github.nomisrev
 
 import arrow.continuations.generic.AtomicRef
 import arrow.continuations.generic.loop
+import arrow.fx.coroutines.ExitCase
 import arrow.fx.coroutines.Resource
 
 public interface Hotswap<R> {
@@ -64,7 +65,11 @@ private class DefaultHotswap<R>(val state: AtomicRef<Finalizer?>) : Hotswap<R> {
     }
 
   override suspend fun swap(next: Resource<R>): R = uncancellable {
-    val (r, finalizers) = cancellable(next::allocated)
+    val (r, finalizers) = cancellable {
+      val (acquire, release) = next.allocated()
+      val r = acquire()
+      Pair(r, suspend { release(r, ExitCase.Completed) })
+    }
     swapFinalizer(finalizers)
     r
   }
