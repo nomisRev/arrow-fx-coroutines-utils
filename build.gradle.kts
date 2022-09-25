@@ -23,10 +23,13 @@ allprojects {
   extra.set("dokka.outputDirectory", rootDir.resolve("docs"))
 }
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions.jvmTarget = "1.8"
-  sourceCompatibility = "1.8"
-  targetCompatibility = "1.8"
+  kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
 }
 
 kotlin {
