@@ -28,23 +28,23 @@ jobs:
 
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
       - name: Set up Java
-        uses: actions/setup-java@v3.3.0
+        uses: actions/setup-java@v4.5.0
         with:
           distribution: 'zulu'
           java-version: 11
 
       - name: build
-        uses: gradle/gradle-build-action@v2.1.6
+        uses: gradle/gradle-build-action@v3.5.0
         with:
           arguments: build --scan --full-stacktrace
 
       - name: Upload reports
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: 'reports-${{ matrix.os }}'
           path: '**/build/reports/**'
@@ -63,12 +63,12 @@ jobs:
 
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Java
-        uses: actions/setup-java@v3.3.0
+        uses: actions/setup-java@v4.5.0
         with:
           distribution: 'zulu'
           java-version: 11
